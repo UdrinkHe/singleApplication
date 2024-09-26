@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>simple todo list</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='./css/todoList.css'>
+    <script src='./js/todoList.js'></script>
+</head>
+<body> 
+    <div class="zhezhao"></div>
+    <div id="main">
+        <div class="title">    <!--标题区-->
+            MY TO DO LIST
+        </div>  
+        <div class="search">   <!--搜索栏-->
+            <div class="longContent"><input type="text" placeholder="请输入想要查找的事项"></div>
+            <div class="ButtonBlock" onclick="changeSearchValue()"><button>查找</button></div>
+        </div>
+        <div class="isFinish">     <!--是否代办-->
+            <div>
+                <span>Todo Done:50</span>
+            </div>
+            <div>
+                <span>Todo On Progress:50</span>
+            </div>
+            <div onclick="openAdd()">添加</div>
+        </div>
+        <div class="contentBlock">     <!--内容区域-->
+           <!-- <div class="listItem">      
+                <div class="longContent">123</div>
+                <div class="ButtonBlock">
+                    <button></button>
+                    <button></button>
+                    <button></button>
+                </div>
+            </div>-->
+        </div>
+        <div class="pageControl">   <!--页码控件-->
+            <div class="changePage" onclick="lastPage()">上一页</div>
+            <div><span>1</span>/<span>2</span></div>
+            <div class="changePage" onclick="nextPage()">下一页</div>
+            <div><input type="text"></div>
+            <div onclick="turnToPage()">跳转</div>
+        </div>
+        <div id="editBlock"><!--用于添加或修改-->
+            <div></div>
+            <div>标题:<input type="text"></div>
+            <div>内容<textarea></textarea></div>
+            <div>
+                <button onclick="editChange()">确定</button>
+                <button onclick="cancelEdit()">取消</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
