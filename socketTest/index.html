@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天应用</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        #messages li {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+        #form {
+            display: flex;
+            margin-top: 10px;
+        }
+        #input {
+            flex: 1;
+            padding: 10px;
+        }
+        #send {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>聊天应用</h1>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+        <input id="input" autocomplete="off" placeholder="输入消息..." />
+        <button id="send">发送</button>
+    </form>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:3000');
+        socket.binaryType = 'arraybuffer'
+
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+
+        // 发送消息
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (input.value) {
+                socket.send(input.value);
+                input.value = '';
+            }
+        });
+
+        // 接收消息
+        socket.onmessage = function(event) {
+            // 检查消息类型
+            console.log(event.data)
+            console.log(typeof event.data)
+            if (event.data instanceof Blob) {
+                console.log('yes,is blob')
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result; // 读取的文本内容
+                    const item = document.createElement('li');
+                    item.textContent = text; // 显示Blob内容
+                    messages.appendChild(item);
+                    window.scrollTo(0, document.body.scrollHeight);
+                };
+                reader.readAsText(event.data); // 将Blob读取为文本
+            } else {
+                const item = document.createElement('li');
+                item.textContent = event.data; // 处理其他类型的消息
+                messages.appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        };
+
+        socket.onopen = function() {
+            console.log('WebSocket连接已打开');
+        };
+
+        socket.onclose = function() {
+            console.log('WebSocket连接已关闭');
+        };
+
+        socket.onerror = function(error) {
+            console.error('WebSocket错误:', error);
+        };
+    </script>
+</body>
+</html> 

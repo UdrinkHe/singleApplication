@@ -1,0 +1,7 @@
+# 忽略媒体文件
+.mp4
+
+.md
+!README.md
+
+node_modules

@@ -1,0 +1,10 @@
+.video-container {
+    width: 640px;
+    margin: auto;
+}
+
+#customControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

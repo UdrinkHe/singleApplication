@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blob Streaming with MSE</title>
+</head>
+<body>
+    <video id="video" controls width="640" height="360"></video>
+    <button id="loadButton">加载视频</button>
+
+    <script>
+        const video = document.getElementById('video');
+        const loadButton = document.getElementById('loadButton');
+        const videoSources = ['./asset_son/output0.m4s', './asset_son/output1.m4s', './asset_son/output2.m4s', './asset_son/output3.m4s']; // 替换为你的M4S文件路径
+        let mediaSource = new MediaSource();
+        video.src = URL.createObjectURL(mediaSource);
+
+        mediaSource.addEventListener('sourceopen', () => {
+            const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001F, mp4a.40.2"');
+            let currentSegment = 0;
+
+            const fetchSegment = (index) => {
+                if (index < videoSources.length) {
+                    fetch(videoSources[index])
+                        .then(response => response.arrayBuffer())
+                        .then(data => {
+                            sourceBuffer.appendBuffer(data);
+                            sourceBuffer.addEventListener('updateend', () => {
+                                currentSegment++;
+                                fetchSegment(currentSegment);
+                            });
+                        })
+                        .catch(err => console.error(`加载片段失败: ${err.message}`));
+                } else {
+                    mediaSource.endOfStream();
+                }
+            };
+
+            fetchSegment(currentSegment);
+        });
+
+        loadButton.onclick = () => {
+            video.play();
+        };
+    </script>
+</body>
+</html>

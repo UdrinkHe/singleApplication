@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>视频播放器</title>
+</head>
+<body>
+    <div class="video-container">
+        <video id="videoPlayer" controls loop>
+            您的浏览器不支持视频标签。
+        </video>
+        <div id="customControls">
+            <!-- 自定义控制器 -->
+            <button id="playPause">播放/暂停</button>
+            <input type="range" id="progressBar" value="0" />
+        </div>
+    </div>
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    <script src="dashPlayer.js"></script>
+</body>
+</html>

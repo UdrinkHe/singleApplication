@@ -1,0 +1,8 @@
+$primary-color: #007bff;
+@mixin test($color){
+  color: $color;
+}
+
+.myH3{
+    @include test($primary-color);
+  }

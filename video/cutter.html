@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Playback with Caching</title>
+    <style>
+        #progressBar {
+            width: 640px; /* 与视频元素宽度相同 */
+            height: 20px;
+            background-color: #ddd;
+            cursor: pointer;
+            position: relative;
+        }
+        #progress {
+            height: 100%;
+            background-color: #76c7c0;
+            width: 0;
+        }
+        #timeDisplay {
+            position: absolute;
+            top: -25px; /* 调整时间显示位置 */
+            left: 0;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <video id="mainVideo" controls width="640" height="360">
+        Your browser does not support the video tag.
+    </video>
+    <div id="progressBar" onclick="setProgress(event)">
+        <div id="progress"></div>
+        <div id="timeDisplay">0:00 / 0:00</div> <!-- 时间显示 -->
+    </div>
+    <button id="startButton">开始播放</button>
+
+    <script>
+        const mainVideo = document.getElementById('mainVideo');
+        const startButton = document.getElementById('startButton');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const timeDisplay = document.getElementById('timeDisplay');
+
+        const segmentDuration = 15; // 每段的时长
+        const totalSegments = 4; // 假设有4个片段
+        const videoSources = []; // 存储视频源
+
+        // 动态生成视频源
+        for (let i = 0; i < totalSegments; i++) {
+            videoSources.push(`./asset_son/output${i}.mp4`); // 替换为实际的片段路径
+        }
+
+        let currentSegment = 0; // 当前播放的片段索引
+        let totalTimePlayed = 0; // 总播放时间
+
+        // 播放下一个片段
+        const playNextSegment = (time = 0) => {
+            if (currentSegment < videoSources.length) {
+                mainVideo.src = videoSources[currentSegment]; // 设置视频源
+                mainVideo.currentTime = time; // 设置当前播放时间
+                mainVideo.play().then(() => {
+                    console.log(`正在播放: ${videoSources[currentSegment]}`);
+                }).catch(err => {
+                    console.error(`播放失败: ${err.message}`);
+                });
+
+                // 当当前片段播放结束时，播放下一个片段
+                mainVideo.onended = () => {
+                    console.log('片段结束');
+                    totalTimePlayed += segmentDuration; // 更新总播放时间
+                    currentSegment++;
+                    playNextSegment(); // 播放下一个片段
+                };
+            } else {
+                console.log('所有片段播放完毕');
+            }
+        };
+
+        // 更新进度条和时间显示
+        const updateProgress = () => {
+            const currentTime = totalTimePlayed + mainVideo.currentTime; // 当前播放时间 + 前面播放的时间
+            const totalDuration = segmentDuration * totalSegments; // 总时长
+            const percentage = (currentTime / totalDuration) * 100;
+            progress.style.width = percentage + '%';
+
+            // 更新时间显示
+            const currentMinutes = Math.floor(currentTime / 60);
+            const currentSeconds = Math.floor(currentTime % 60);
+            const totalMinutes = Math.floor(totalDuration / 60);
+            const totalSeconds = Math.floor(totalDuration % 60);
+            timeDisplay.textContent = `${currentMinutes}:${currentSeconds < 10 ? '0' : ''}${currentSeconds} / ${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
+        };
+
+        // 设置进度条
+        const setProgress = (event) => {
+            const totalDuration = segmentDuration * totalSegments;
+            const rect = progressBar.getBoundingClientRect();
+            const offsetX = event.clientX - rect.left;
+            const percentage = offsetX / rect.width;
+            const newTime = percentage * totalDuration;
+
+            // 计算当前播放的片段和时间
+            currentSegment = Math.floor(newTime / segmentDuration);
+            const timeInSegment = newTime % segmentDuration;
+
+            // 播放指定时间
+            totalTimePlayed = newTime - timeInSegment; // 更新总播放时间
+            playNextSegment(timeInSegment);
+        };
+
+        // 开始播放
+        startButton.onclick = () => {
+            currentSegment = 0; // 重置当前片段索引
+            totalTimePlayed = 0; // 重置总播放时间
+            playNextSegment(); // 开始播放第一个片段
+        };
+
+        // 监听视频时间更新
+        mainVideo.addEventListener('timeupdate', updateProgress);
+    </script>
+</body>
+</html> 
